@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Study Planner helps you organize subjects, study tasks, exams and progress."
+    >
+
+    <title>Study Planner</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+
+    <header class="header">
+        <div class="container navbar">
+
+            <a href="#dashboard" class="logo">
+                Study<span>Planner</span>
+            </a>
+
+            <button
+                type="button"
+                class="mobile-menu-button"
+                id="mobileMenuButton"
+                aria-label="Open navigation"
+                aria-expanded="false"
+            >
+                ☰
+            </button>
+
+            <nav class="nav-links" id="navLinks">
+                <a href="#dashboard">Dashboard</a>
+                <a href="#subjects">Subjects</a>
+                <a href="#tasks">Tasks</a>
+                <a href="#exams">Exams</a>
+            </nav>
+
+        </div>
+    </header>
+
+
+    <main>
+
+        <!-- DASHBOARD -->
+
+        <section class="dashboard section" id="dashboard">
+
+            <div class="container">
+
+                <div class="welcome">
+
+                    <div class="welcome-content">
+
+                        <p class="eyebrow">
+                            STUDY PLANNER
+                        </p>
+
+                        <h1>
+                            Organize your studies.
+                            <span>Achieve your goals.</span>
+                        </h1>
+
+                        <p class="intro">
+                            Keep your subjects, tasks and exams organized
+                            in one focused workspace.
+                        </p>
+
+                    </div>
+
+
+                    <div class="today-card">
+
+                        <span>
+                            Today
+                        </span>
+
+                        <strong id="todayDate">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- MAIN STATISTICS -->
+
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon">
+                            📚
+                        </div>
+
+                        <div class="stat-content">
+
+                            <span>
+                                Subjects
+                            </span>
+
+                            <strong id="subjectCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon">
+                            ✓
+                        </div>
+
+                        <div class="stat-content">
+
+                            <span>
+                                Completed Tasks
+                            </span>
+
+                            <strong id="completedTaskCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon">
+                            ○
+                        </div>
+
+                        <div class="stat-content">
+
+                            <span>
+                                Pending Tasks
+                            </span>
+
+                            <strong id="pendingTaskCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon">
+                            📅
+                        </div>
+
+                        <div class="stat-content">
+
+                            <span>
+                                Upcoming Exams
+                            </span>
+
+                            <strong id="examCount">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PROGRESS -->
+
+                <div class="progress-card">
+
+                    <div class="progress-header">
+
+                        <div>
+
+                            <span>
+                                Overall Progress
+                            </span>
+
+                            <h2 id="progressPercentage">
+                                0%
+                            </h2>
+
+                        </div>
+
+                        <p id="progressText">
+                            Add tasks to start tracking your progress.
+                        </p>
+
+                    </div>
+
+
+                    <div class="progress-bar">
+
+                        <div
+                            class="progress-fill"
+                            id="progressFill"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ADVANCED STATISTICS -->
+
+                <div class="advanced-stats">
+
+                    <div class="advanced-stat-card streak-card">
+
+                        <div class="advanced-stat-icon">
+                            🔥
+                        </div>
+
+                        <div class="advanced-stat-content">
+
+                            <span>
+                                Study Streak
+                            </span>
+
+                            <strong id="studyStreak">
+                                0 days
+                            </strong>
+
+                            <small id="streakMessage">
+                                Complete a task to start your streak.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="advanced-stat-card">
+
+                        <div class="advanced-stat-icon">
+                            🎯
+                        </div>
+
+                        <div class="advanced-stat-content">
+
+                            <span>
+                                Completion Rate
+                            </span>
+
+                            <strong id="completionRate">
+                                0%
+                            </strong>
+
+                            <small>
+                                Based on your tasks
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="advanced-stat-card">
+
+                        <div class="advanced-stat-icon">
+                            📋
+                        </div>
+
+                        <div class="advanced-stat-content">
+
+                            <span>
+                                Total Tasks
+                            </span>
+
+                            <strong id="totalTaskCount">
+                                0
+                            </strong>
+
+                            <small>
+                                All study tasks
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="advanced-stat-card">
+
+                        <div class="advanced-stat-icon">
+                            ⏰
+                        </div>
+
+                        <div class="advanced-stat-content">
+
+                            <span>
+                                Next Exam
+                            </span>
+
+                            <strong id="nextExamDays">
+                                —
+                            </strong>
+
+                            <small id="nextExamName">
+                                No upcoming exam
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- WEEKLY OVERVIEW -->
+
+                <div class="weekly-card">
+
+                    <div class="weekly-header">
+
+                        <div>
+
+                            <p class="eyebrow">
+                                PROGRESS
+                            </p>
+
+                            <h2>
+                                Weekly Overview
+                            </h2>
+
+                        </div>
+
+                        <span id="weeklySummary">
+                            Keep going!
+                        </span>
+
+                    </div>
+
+
+                    <div class="weekly-chart">
+
+                        <div class="day-column">
+
+                            <div
+                                class="day-bar"
+                                id="mondayBar"
+                                style="height: 10%"
+                            ></div>
+
+                            <span>
+                                Mon
+                            </span>
+
+                        </div>
+
+
+                        <div class="day-column">
+
+                            <div
+                                class="day-bar"
+                                id="tuesdayBar"
+                                style="height: 10%"
+                            ></div>
+
+                            <span>
+                                Tue
+                            </span>
+
+                        </div>
+
+
+                        <div class="day-column">
+
+                            <div
+                                class="day-bar"
+                                id="wednesdayBar"
+                                style="height: 10%"
+                            ></div>
+
+                            <span>
+                                Wed
+                            </span>
+
+                        </div>
+
+
+                        <div class="day-column">
+
+                            <div
+                                class="day-bar"
+                                id="thursdayBar"
+                                style="height: 10%"
+                            ></div>
+
+                            <span>
+                                Thu
+                            </span>
+
+                        </div>
+
+
+                        <div class="day-column">
+
+                            <div
+                                class="day-bar"
+                                id="fridayBar"
+                                style="height: 10%"
+                            ></div>
+
+                            <span>
+                                Fri
+                            </span>
+
+                        </div>
+
+
+                        <div class="day-column">
+
+                            <div
+                                class="day-bar"
+                                id="saturdayBar"
+                                style="height: 10%"
+                            ></div>
+
+                            <span>
+                                Sat
+                            </span>
+
+                        </div>
+
+
+                        <div class="day-column">
+
+                            <div
+                                class="day-bar"
+                                id="sundayBar"
+                                style="height: 10%"
+                            ></div>
+
+                            <span>
+                                Sun
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SUBJECTS -->
+
+        <section class="section" id="subjects">
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <p class="eyebrow">
+                            ORGANIZE
+                        </p>
+
+                        <h2>
+                            Subjects
+                        </h2>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="primary-button"
+                        id="addSubjectButton"
+                    >
+                        + Add Subject
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="subject-grid"
+                    id="subjectGrid"
+                ></div>
+
+
+                <div
+                    class="empty-state"
+                    id="subjectEmptyState"
+                >
+
+                    <div class="empty-icon">
+                        📚
+                    </div>
+
+                    <h3>
+                        No subjects added
+                    </h3>
+
+                    <p>
+                        Add a subject to begin organizing your studies.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- TASKS -->
+
+        <section
+            class="section tasks-section"
+            id="tasks"
+        >
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <p class="eyebrow">
+                            YOUR WORK
+                        </p>
+
+                        <h2>
+                            Study Tasks
+                        </h2>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="primary-button"
+                        id="addTaskButton"
+                    >
+                        + Add Task
+                    </button>
+
+                </div>
+
+
+                <div class="task-controls">
+
+                    <button
+                        type="button"
+                        class="filter-button active"
+                        data-filter="all"
+                    >
+                        All
+                    </button>
+
+                    <button
+                        type="button"
+                        class="filter-button"
+                        data-filter="pending"
+                    >
+                        Pending
+                    </button>
+
+                    <button
+                        type="button"
+                        class="filter-button"
+                        data-filter="completed"
+                    >
+                        Completed
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="task-list"
+                    id="taskList"
+                ></div>
+
+
+                <div
+                    class="empty-state"
+                    id="taskEmptyState"
+                >
+
+                    <div class="empty-icon">
+                        ✓
+                    </div>
+
+                    <h3>
+                        No tasks added
+                    </h3>
+
+                    <p>
+                        Add a study task to keep track of your work.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- EXAMS -->
+
+        <section
+            class="section"
+            id="exams"
+        >
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <p class="eyebrow">
+                            PLAN AHEAD
+                        </p>
+
+                        <h2>
+                            Exam Schedule
+                        </h2>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="primary-button"
+                        id="addExamButton"
+                    >
+                        + Add Exam
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="exam-list"
+                    id="examList"
+                ></div>
+
+
+                <div
+                    class="empty-state"
+                    id="examEmptyState"
+                >
+
+                    <div class="empty-icon">
+                        📅
+                    </div>
+
+                    <h3>
+                        No exams added
+                    </h3>
+
+                    <p>
+                        Add your upcoming exams to keep important dates organized.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- SUBJECT MODAL -->
+
+    <div
+        class="modal"
+        id="subjectModal"
+        aria-hidden="true"
+    >
+
+        <div
+            class="modal-content"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="subjectModalTitle"
+        >
+
+            <div class="modal-header">
+
+                <div>
+
+                    <p class="eyebrow">
+                        SUBJECT
+                    </p>
+
+                    <h2 id="subjectModalTitle">
+                        Add Subject
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="close-button"
+                    data-close="subjectModal"
+                    aria-label="Close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form id="subjectForm">
+
+                <div class="form-group">
+
+                    <label for="subjectName">
+                        Subject Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="subjectName"
+                        name="subjectName"
+                        autocomplete="off"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="subjectColor">
+                        Subject Color
+                    </label>
+
+                    <select
+                        id="subjectColor"
+                        name="subjectColor"
+                    >
+
+                        <option value="blue">
+                            Blue
+                        </option>
+
+                        <option value="purple">
+                            Purple
+                        </option>
+
+                        <option value="green">
+                            Green
+                        </option>
+
+                        <option value="orange">
+                            Orange
+                        </option>
+
+                        <option value="red">
+                            Red
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="primary-button full-button"
+                >
+                    Add Subject
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- TASK MODAL -->
+
+    <div
+        class="modal"
+        id="taskModal"
+        aria-hidden="true"
+    >
+
+        <div
+            class="modal-content"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="taskModalTitle"
+        >
+
+            <div class="modal-header">
+
+                <div>
+
+                    <p class="eyebrow">
+                        STUDY TASK
+                    </p>
+
+                    <h2 id="taskModalTitle">
+                        Add Task
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="close-button"
+                    data-close="taskModal"
+                    aria-label="Close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form id="taskForm">
+
+                <div class="form-group">
+
+                    <label for="taskTitle">
+                        Task
+                    </label>
+
+                    <input
+                        type="text"
+                        id="taskTitle"
+                        name="taskTitle"
+                        autocomplete="off"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="taskSubject">
+                        Subject
+                    </label>
+
+                    <select
+                        id="taskSubject"
+                        name="taskSubject"
+                        required
+                    >
+
+                        <option value="">
+                            Select a subject
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="taskDueDate">
+                        Due Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="taskDueDate"
+                        name="taskDueDate"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="primary-button full-button"
+                >
+                    Add Task
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- EXAM MODAL -->
+
+    <div
+        class="modal"
+        id="examModal"
+        aria-hidden="true"
+    >
+
+        <div
+            class="modal-content"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="examModalTitle"
+        >
+
+            <div class="modal-header">
+
+                <div>
+
+                    <p class="eyebrow">
+                        EXAM
+                    </p>
+
+                    <h2 id="examModalTitle">
+                        Add Exam
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="close-button"
+                    data-close="examModal"
+                    aria-label="Close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form id="examForm">
+
+                <div class="form-group">
+
+                    <label for="examName">
+                        Exam Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="examName"
+                        name="examName"
+                        autocomplete="off"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="examSubject">
+                        Subject
+                    </label>
+
+                    <select
+                        id="examSubject"
+                        name="examSubject"
+                        required
+                    >
+
+                        <option value="">
+                            Select a subject
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="examDate">
+                        Exam Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="examDate"
+                        name="examDate"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="primary-button full-button"
+                >
+                    Add Exam
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>
