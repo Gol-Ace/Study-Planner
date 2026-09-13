@@ -19,5 +19,7 @@ This is the frontend version of Study Planner. A backend and database can be add
 1] Download or clone this repository.
 2] If downloaded as a ZIP file then extract it.
 3] Open 'index.html' in a web browser.
+## Live Demo
+You can directly access it through this link= (https://gol-ace.github.io/Study-Planner/)
 ## Author
 **Gol-Ace**
