@@ -16,14 +16,401 @@
 
 <body>
 
-    <!-- HEADER -->
+    <!-- =====================================================
+         AUTHENTICATION SCREEN
+         ===================================================== -->
+
+    <div
+        class="auth-screen"
+        id="authScreen"
+    >
+
+        <div class="auth-container">
+
+            <!-- LEFT SIDE -->
+
+            <div class="auth-showcase">
+
+                <div class="auth-brand">
+                    Study<span>Planner</span>
+                </div>
+
+                <div class="auth-showcase-content">
+
+                    <p class="eyebrow">
+                        YOUR STUDY SPACE
+                    </p>
+
+                    <h1>
+                        Plan smarter.
+                        <span>Study better.</span>
+                    </h1>
+
+                    <p>
+                        Organize your subjects, tasks and exams
+                        in one focused workspace designed around
+                        your goals.
+                    </p>
+
+                    <div class="auth-feature-list">
+
+                        <div class="auth-feature">
+
+                            <span>✓</span>
+
+                            <div>
+                                <strong>Stay organized</strong>
+
+                                <small>
+                                    Keep every subject and task in one place.
+                                </small>
+                            </div>
+
+                        </div>
+
+
+                        <div class="auth-feature">
+
+                            <span>🔥</span>
+
+                            <div>
+                                <strong>Build your streak</strong>
+
+                                <small>
+                                    Track your study consistency every day.
+                                </small>
+                            </div>
+
+                        </div>
+
+
+                        <div class="auth-feature">
+
+                            <span>☁</span>
+
+                            <div>
+                                <strong>Access anywhere</strong>
+
+                                <small>
+                                    Your planner data follows your account.
+                                </small>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="auth-decoration auth-decoration-one"></div>
+
+                <div class="auth-decoration auth-decoration-two"></div>
+
+            </div>
+
+
+            <!-- RIGHT SIDE -->
+
+            <div class="auth-panel">
+
+                <div class="auth-panel-inner">
+
+                    <div class="auth-mobile-brand">
+                        Study<span>Planner</span>
+                    </div>
+
+
+                    <div class="auth-heading">
+
+                        <p class="eyebrow">
+                            WELCOME
+                        </p>
+
+                        <h2 id="authTitle">
+                            Welcome back
+                        </h2>
+
+                        <p id="authSubtitle">
+                            Sign in to continue to your study space.
+                        </p>
+
+                    </div>
+
+
+                    <!-- AUTH TABS -->
+
+                    <div class="auth-tabs">
+
+                        <button
+                            type="button"
+                            class="auth-tab active"
+                            id="loginTab"
+                        >
+                            Login
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="auth-tab"
+                            id="signupTab"
+                        >
+                            Create Account
+                        </button>
+
+                    </div>
+
+
+                    <!-- LOGIN FORM -->
+
+                    <form
+                        class="auth-form"
+                        id="loginForm"
+                    >
+
+                        <div class="form-group">
+
+                            <label for="loginEmail">
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                id="loginEmail"
+                                name="loginEmail"
+                                placeholder="you@example.com"
+                                autocomplete="email"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <div class="password-label-row">
+
+                                <label for="loginPassword">
+                                    Password
+                                </label>
+
+                            </div>
+
+
+                            <div class="password-input-wrap">
+
+                                <input
+                                    type="password"
+                                    id="loginPassword"
+                                    name="loginPassword"
+                                    placeholder="Enter your password"
+                                    autocomplete="current-password"
+                                    required
+                                >
+
+
+                                <button
+                                    type="button"
+                                    class="password-toggle"
+                                    data-password-target="loginPassword"
+                                    aria-label="Show password"
+                                >
+                                    Show
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="auth-submit-button"
+                            id="loginSubmitButton"
+                        >
+
+                            <span>
+                                Login to Study Planner
+                            </span>
+
+                            <span class="auth-submit-arrow">
+                                →
+                            </span>
+
+                        </button>
+
+                    </form>
+
+
+                    <!-- SIGNUP FORM -->
+
+                    <form
+                        class="auth-form"
+                        id="signupForm"
+                        hidden
+                    >
+
+                        <div class="form-group">
+
+                            <label for="signupName">
+                                Your Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="signupName"
+                                name="signupName"
+                                placeholder="Enter your name"
+                                autocomplete="name"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="signupEmail">
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                id="signupEmail"
+                                name="signupEmail"
+                                placeholder="you@example.com"
+                                autocomplete="email"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="signupPassword">
+                                Password
+                            </label>
+
+
+                            <div class="password-input-wrap">
+
+                                <input
+                                    type="password"
+                                    id="signupPassword"
+                                    name="signupPassword"
+                                    placeholder="At least 6 characters"
+                                    autocomplete="new-password"
+                                    minlength="6"
+                                    required
+                                >
+
+
+                                <button
+                                    type="button"
+                                    class="password-toggle"
+                                    data-password-target="signupPassword"
+                                    aria-label="Show password"
+                                >
+                                    Show
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="signupConfirmPassword">
+                                Confirm Password
+                            </label>
+
+
+                            <div class="password-input-wrap">
+
+                                <input
+                                    type="password"
+                                    id="signupConfirmPassword"
+                                    name="signupConfirmPassword"
+                                    placeholder="Enter your password again"
+                                    autocomplete="new-password"
+                                    minlength="6"
+                                    required
+                                >
+
+
+                                <button
+                                    type="button"
+                                    class="password-toggle"
+                                    data-password-target="signupConfirmPassword"
+                                    aria-label="Show password"
+                                >
+                                    Show
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="auth-submit-button"
+                            id="signupSubmitButton"
+                        >
+
+                            <span>
+                                Create My Account
+                            </span>
+
+                            <span class="auth-submit-arrow">
+                                →
+                            </span>
+
+                        </button>
+
+                    </form>
+
+
+                    <!-- AUTH MESSAGE -->
+
+                    <div
+                        class="auth-message"
+                        id="authMessage"
+                        role="alert"
+                        aria-live="polite"
+                    ></div>
+
+
+                    <p class="auth-footer-text">
+                        Your planner data belongs to your account
+                        and is kept separate from other users.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
 
     <header class="header">
+
         <div class="container navbar">
 
             <a href="#dashboard" class="logo">
                 Study<span>Planner</span>
             </a>
+
 
             <button
                 type="button"
@@ -35,22 +422,71 @@
                 ☰
             </button>
 
-            <nav class="nav-links" id="navLinks">
-                <a href="#dashboard">Dashboard</a>
-                <a href="#subjects">Subjects</a>
-                <a href="#tasks">Tasks</a>
-                <a href="#exams">Exams</a>
+
+            <nav
+                class="nav-links"
+                id="navLinks"
+            >
+
+                <a href="#dashboard">
+                    Dashboard
+                </a>
+
+                <a href="#subjects">
+                    Subjects
+                </a>
+
+                <a href="#tasks">
+                    Tasks
+                </a>
+
+                <a href="#exams">
+                    Exams
+                </a>
+
             </nav>
 
+
+            <!-- USER ACTIONS -->
+
+            <div class="user-actions">
+
+                <span
+                    class="current-user-name"
+                    id="currentUserName"
+                ></span>
+
+
+                <button
+                    type="button"
+                    class="logout-button"
+                    id="logoutButton"
+                >
+                    Log out
+                </button>
+
+            </div>
+
         </div>
+
     </header>
 
 
+
+    <!-- =====================================================
+         MAIN
+         ===================================================== -->
+
     <main>
 
-        <!-- DASHBOARD -->
+        <!-- =================================================
+             DASHBOARD
+             ================================================= -->
 
-        <section class="dashboard section" id="dashboard">
+        <section
+            class="dashboard section"
+            id="dashboard"
+        >
 
             <div class="container">
 
@@ -62,10 +498,12 @@
                             STUDY PLANNER
                         </p>
 
+
                         <h1>
                             Organize your studies.
                             <span>Achieve your goals.</span>
                         </h1>
+
 
                         <p class="intro">
                             Keep your subjects, tasks and exams organized
@@ -81,6 +519,7 @@
                             Today
                         </span>
 
+
                         <strong id="todayDate">
                             —
                         </strong>
@@ -88,6 +527,7 @@
                     </div>
 
                 </div>
+
 
 
                 <!-- MAIN STATISTICS -->
@@ -100,11 +540,13 @@
                             📚
                         </div>
 
+
                         <div class="stat-content">
 
                             <span>
                                 Subjects
                             </span>
+
 
                             <strong id="subjectCount">
                                 0
@@ -115,17 +557,20 @@
                     </div>
 
 
+
                     <div class="stat-card">
 
                         <div class="stat-icon">
                             ✓
                         </div>
 
+
                         <div class="stat-content">
 
                             <span>
                                 Completed Tasks
                             </span>
+
 
                             <strong id="completedTaskCount">
                                 0
@@ -136,17 +581,20 @@
                     </div>
 
 
+
                     <div class="stat-card">
 
                         <div class="stat-icon">
                             ○
                         </div>
 
+
                         <div class="stat-content">
 
                             <span>
                                 Pending Tasks
                             </span>
+
 
                             <strong id="pendingTaskCount">
                                 0
@@ -157,17 +605,20 @@
                     </div>
 
 
+
                     <div class="stat-card">
 
                         <div class="stat-icon">
                             📅
                         </div>
 
+
                         <div class="stat-content">
 
                             <span>
                                 Upcoming Exams
                             </span>
+
 
                             <strong id="examCount">
                                 0
@@ -178,6 +629,7 @@
                     </div>
 
                 </div>
+
 
 
                 <!-- PROGRESS -->
@@ -192,11 +644,13 @@
                                 Overall Progress
                             </span>
 
+
                             <h2 id="progressPercentage">
                                 0%
                             </h2>
 
                         </div>
+
 
                         <p id="progressText">
                             Add tasks to start tracking your progress.
@@ -217,6 +671,7 @@
                 </div>
 
 
+
                 <!-- ADVANCED STATISTICS -->
 
                 <div class="advanced-stats">
@@ -227,15 +682,18 @@
                             🔥
                         </div>
 
+
                         <div class="advanced-stat-content">
 
                             <span>
                                 Study Streak
                             </span>
 
+
                             <strong id="studyStreak">
                                 0 days
                             </strong>
+
 
                             <small id="streakMessage">
                                 Complete a task to start your streak.
@@ -246,11 +704,13 @@
                     </div>
 
 
+
                     <div class="advanced-stat-card">
 
                         <div class="advanced-stat-icon">
                             🎯
                         </div>
+
 
                         <div class="advanced-stat-content">
 
@@ -258,9 +718,11 @@
                                 Completion Rate
                             </span>
 
+
                             <strong id="completionRate">
                                 0%
                             </strong>
+
 
                             <small>
                                 Based on your tasks
@@ -271,11 +733,13 @@
                     </div>
 
 
+
                     <div class="advanced-stat-card">
 
                         <div class="advanced-stat-icon">
                             📋
                         </div>
+
 
                         <div class="advanced-stat-content">
 
@@ -283,9 +747,11 @@
                                 Total Tasks
                             </span>
 
+
                             <strong id="totalTaskCount">
                                 0
                             </strong>
+
 
                             <small>
                                 All study tasks
@@ -296,11 +762,13 @@
                     </div>
 
 
+
                     <div class="advanced-stat-card">
 
                         <div class="advanced-stat-icon">
                             ⏰
                         </div>
+
 
                         <div class="advanced-stat-content">
 
@@ -308,9 +776,11 @@
                                 Next Exam
                             </span>
 
+
                             <strong id="nextExamDays">
                                 —
                             </strong>
+
 
                             <small id="nextExamName">
                                 No upcoming exam
@@ -321,6 +791,7 @@
                     </div>
 
                 </div>
+
 
 
                 <!-- WEEKLY OVERVIEW -->
@@ -335,11 +806,13 @@
                                 PROGRESS
                             </p>
 
+
                             <h2>
                                 Weekly Overview
                             </h2>
 
                         </div>
+
 
                         <span id="weeklySummary">
                             Keep going!
@@ -358,6 +831,7 @@
                                 style="height: 10%"
                             ></div>
 
+
                             <span>
                                 Mon
                             </span>
@@ -372,6 +846,7 @@
                                 id="tuesdayBar"
                                 style="height: 10%"
                             ></div>
+
 
                             <span>
                                 Tue
@@ -388,6 +863,7 @@
                                 style="height: 10%"
                             ></div>
 
+
                             <span>
                                 Wed
                             </span>
@@ -402,6 +878,7 @@
                                 id="thursdayBar"
                                 style="height: 10%"
                             ></div>
+
 
                             <span>
                                 Thu
@@ -418,6 +895,7 @@
                                 style="height: 10%"
                             ></div>
 
+
                             <span>
                                 Fri
                             </span>
@@ -432,6 +910,7 @@
                                 id="saturdayBar"
                                 style="height: 10%"
                             ></div>
+
 
                             <span>
                                 Sat
@@ -448,6 +927,7 @@
                                 style="height: 10%"
                             ></div>
 
+
                             <span>
                                 Sun
                             </span>
@@ -463,9 +943,15 @@
         </section>
 
 
-        <!-- SUBJECTS -->
 
-        <section class="section" id="subjects">
+        <!-- =================================================
+             SUBJECTS
+             ================================================= -->
+
+        <section
+            class="section"
+            id="subjects"
+        >
 
             <div class="container">
 
@@ -476,6 +962,7 @@
                         <p class="eyebrow">
                             ORGANIZE
                         </p>
+
 
                         <h2>
                             Subjects
@@ -510,9 +997,11 @@
                         📚
                     </div>
 
+
                     <h3>
                         No subjects added
                     </h3>
+
 
                     <p>
                         Add a subject to begin organizing your studies.
@@ -525,7 +1014,10 @@
         </section>
 
 
-        <!-- TASKS -->
+
+        <!-- =================================================
+             TASKS
+             ================================================= -->
 
         <section
             class="section tasks-section"
@@ -541,6 +1033,7 @@
                         <p class="eyebrow">
                             YOUR WORK
                         </p>
+
 
                         <h2>
                             Study Tasks
@@ -570,6 +1063,7 @@
                         All
                     </button>
 
+
                     <button
                         type="button"
                         class="filter-button"
@@ -577,6 +1071,7 @@
                     >
                         Pending
                     </button>
+
 
                     <button
                         type="button"
@@ -604,9 +1099,11 @@
                         ✓
                     </div>
 
+
                     <h3>
                         No tasks added
                     </h3>
+
 
                     <p>
                         Add a study task to keep track of your work.
@@ -619,7 +1116,10 @@
         </section>
 
 
-        <!-- EXAMS -->
+
+        <!-- =================================================
+             EXAMS
+             ================================================= -->
 
         <section
             class="section"
@@ -635,6 +1135,7 @@
                         <p class="eyebrow">
                             PLAN AHEAD
                         </p>
+
 
                         <h2>
                             Exam Schedule
@@ -669,9 +1170,11 @@
                         📅
                     </div>
 
+
                     <h3>
                         No exams added
                     </h3>
+
 
                     <p>
                         Add your upcoming exams to keep important dates organized.
@@ -686,7 +1189,10 @@
     </main>
 
 
-    <!-- SUBJECT MODAL -->
+
+    <!-- =====================================================
+         SUBJECT MODAL
+         ===================================================== -->
 
     <div
         class="modal"
@@ -708,6 +1214,7 @@
                     <p class="eyebrow">
                         SUBJECT
                     </p>
+
 
                     <h2 id="subjectModalTitle">
                         Add Subject
@@ -736,6 +1243,7 @@
                         Subject Name
                     </label>
 
+
                     <input
                         type="text"
                         id="subjectName"
@@ -753,6 +1261,7 @@
                         Subject Color
                     </label>
 
+
                     <select
                         id="subjectColor"
                         name="subjectColor"
@@ -762,17 +1271,21 @@
                             Blue
                         </option>
 
+
                         <option value="purple">
                             Purple
                         </option>
+
 
                         <option value="green">
                             Green
                         </option>
 
+
                         <option value="orange">
                             Orange
                         </option>
+
 
                         <option value="red">
                             Red
@@ -797,7 +1310,10 @@
     </div>
 
 
-    <!-- TASK MODAL -->
+
+    <!-- =====================================================
+         TASK MODAL
+         ===================================================== -->
 
     <div
         class="modal"
@@ -819,6 +1335,7 @@
                     <p class="eyebrow">
                         STUDY TASK
                     </p>
+
 
                     <h2 id="taskModalTitle">
                         Add Task
@@ -847,6 +1364,7 @@
                         Task
                     </label>
 
+
                     <input
                         type="text"
                         id="taskTitle"
@@ -863,6 +1381,7 @@
                     <label for="taskSubject">
                         Subject
                     </label>
+
 
                     <select
                         id="taskSubject"
@@ -884,6 +1403,7 @@
                     <label for="taskDueDate">
                         Due Date
                     </label>
+
 
                     <input
                         type="date"
@@ -909,7 +1429,10 @@
     </div>
 
 
-    <!-- EXAM MODAL -->
+
+    <!-- =====================================================
+         EXAM MODAL
+         ===================================================== -->
 
     <div
         class="modal"
@@ -931,6 +1454,7 @@
                     <p class="eyebrow">
                         EXAM
                     </p>
+
 
                     <h2 id="examModalTitle">
                         Add Exam
@@ -959,6 +1483,7 @@
                         Exam Name
                     </label>
 
+
                     <input
                         type="text"
                         id="examName"
@@ -975,6 +1500,7 @@
                     <label for="examSubject">
                         Subject
                     </label>
+
 
                     <select
                         id="examSubject"
@@ -996,6 +1522,7 @@
                     <label for="examDate">
                         Exam Date
                     </label>
+
 
                     <input
                         type="date"
@@ -1020,6 +1547,9 @@
 
     </div>
 
+
+
+    <!-- JAVASCRIPT -->
 
     <script src="script.js"></script>
 
