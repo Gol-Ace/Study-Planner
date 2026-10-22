@@ -4,64 +4,247 @@
 
 /* =====================================================
    STUDY PLANNER
+   AUTHENTICATION + MONGODB BACKEND
    ===================================================== */
 
 
 /* =====================================================
-   STORAGE
+   API
    ===================================================== */
 
-const STORAGE = {
-    subjects: "studyPlanner_subjects",
-    tasks: "studyPlanner_tasks",
-    exams: "studyPlanner_exams",
-    activity: "studyPlanner_activity"
+const API_BASE_URL =
+    "https://study-planner-backend-i2v0.onrender.com/api";
+
+
+/* =====================================================
+   AUTHENTICATION STORAGE
+   ===================================================== */
+
+const AUTH_STORAGE = {
+    token: "studyPlanner_token",
+    user: "studyPlanner_user"
 };
 
 
-let subjects = readStorage(STORAGE.subjects);
-let tasks = readStorage(STORAGE.tasks);
-let exams = readStorage(STORAGE.exams);
-let activity = readStorage(STORAGE.activity);
+let authToken =
+    localStorage.getItem(
+        AUTH_STORAGE.token
+    );
+
+let currentUser = null;
+
+
+try {
+
+    const savedUser =
+        localStorage.getItem(
+            AUTH_STORAGE.user
+        );
+
+    currentUser =
+        savedUser
+            ? JSON.parse(savedUser)
+            : null;
+
+} catch (error) {
+
+    currentUser = null;
+
+}
+
+
+/* =====================================================
+   APPLICATION STATE
+   ===================================================== */
+
+let subjects = [];
+let tasks = [];
+let exams = [];
+let activity = [];
 
 let activeFilter = "all";
 
 
-function readStorage(key) {
+/* =====================================================
+   API HELPER
+   ===================================================== */
 
-    try {
+async function apiRequest(
+    endpoint,
+    options = {}
+) {
 
-        const saved =
-            localStorage.getItem(key);
+    const headers = {
+        ...(options.body
+            ? {
+                "Content-Type":
+                    "application/json"
+            }
+            : {}),
+        ...(options.headers || {})
+    };
 
-        if (!saved) {
-            return [];
-        }
 
-        const data =
-            JSON.parse(saved);
+    if (authToken) {
 
-        return Array.isArray(data)
-            ? data
-            : [];
-
-    } catch (error) {
-
-        return [];
+        headers.Authorization =
+            `Bearer ${authToken}`;
 
     }
 
+
+    const response =
+        await fetch(
+            `${API_BASE_URL}${endpoint}`,
+            {
+                ...options,
+                headers
+            }
+        );
+
+
+    const text =
+        await response.text();
+
+
+    let data = null;
+
+
+    if (text) {
+
+        try {
+
+            data =
+                JSON.parse(text);
+
+        } catch (error) {
+
+            data = text;
+
+        }
+
+    }
+
+
+    if (!response.ok) {
+
+        const error =
+            new Error(
+                data &&
+                typeof data === "object" &&
+                data.message
+                    ? data.message
+                    : `Request failed with status ${response.status}`
+            );
+
+
+        error.status =
+            response.status;
+
+
+        throw error;
+
+    }
+
+
+    return data;
+
 }
 
 
-function writeStorage(key, data) {
+/* =====================================================
+   AUTH ELEMENTS
+   ===================================================== */
 
-    localStorage.setItem(
-        key,
-        JSON.stringify(data)
+const authScreen =
+    document.getElementById(
+        "authScreen"
     );
 
-}
+const authTitle =
+    document.getElementById(
+        "authTitle"
+    );
+
+const authSubtitle =
+    document.getElementById(
+        "authSubtitle"
+    );
+
+const loginTab =
+    document.getElementById(
+        "loginTab"
+    );
+
+const signupTab =
+    document.getElementById(
+        "signupTab"
+    );
+
+const loginForm =
+    document.getElementById(
+        "loginForm"
+    );
+
+const signupForm =
+    document.getElementById(
+        "signupForm"
+    );
+
+const loginEmail =
+    document.getElementById(
+        "loginEmail"
+    );
+
+const loginPassword =
+    document.getElementById(
+        "loginPassword"
+    );
+
+const signupName =
+    document.getElementById(
+        "signupName"
+    );
+
+const signupEmail =
+    document.getElementById(
+        "signupEmail"
+    );
+
+const signupPassword =
+    document.getElementById(
+        "signupPassword"
+    );
+
+const signupConfirmPassword =
+    document.getElementById(
+        "signupConfirmPassword"
+    );
+
+const authMessage =
+    document.getElementById(
+        "authMessage"
+    );
+
+const loginSubmitButton =
+    document.getElementById(
+        "loginSubmitButton"
+    );
+
+const signupSubmitButton =
+    document.getElementById(
+        "signupSubmitButton"
+    );
+
+const logoutButton =
+    document.getElementById(
+        "logoutButton"
+    );
+
+const currentUserName =
+    document.getElementById(
+        "currentUserName"
+    );
 
 
 /* =====================================================
@@ -312,19 +495,645 @@ const weeklyBars = {
 
 
 /* =====================================================
-   ID GENERATOR
+   AUTHENTICATION UI
    ===================================================== */
 
-function createId() {
+function showAuthScreen() {
 
-    return (
-        Date.now().toString(36) +
-        Math.random()
-            .toString(36)
-            .slice(2, 9)
+    if (!authScreen) {
+        return;
+    }
+
+
+    authScreen.style.display =
+        "flex";
+
+}
+
+
+function hideAuthScreen() {
+
+    if (!authScreen) {
+        return;
+    }
+
+
+    authScreen.style.display =
+        "none";
+
+}
+
+
+function setAuthMessage(
+    message,
+    type = ""
+) {
+
+    authMessage.textContent =
+        message;
+
+
+    authMessage.className =
+        "auth-message";
+
+
+    if (type) {
+
+        authMessage.classList.add(
+            type
+        );
+
+    }
+
+}
+
+
+function showLoginForm() {
+
+    loginTab.classList.add(
+        "active"
+    );
+
+    signupTab.classList.remove(
+        "active"
+    );
+
+
+    loginForm.hidden =
+        false;
+
+    signupForm.hidden =
+        true;
+
+
+    authTitle.textContent =
+        "Welcome back";
+
+
+    authSubtitle.textContent =
+        "Sign in to continue to your study space.";
+
+
+    setAuthMessage(
+        ""
+    );
+
+
+    setTimeout(
+        () => loginEmail.focus(),
+        80
     );
 
 }
+
+
+function showSignupForm() {
+
+    signupTab.classList.add(
+        "active"
+    );
+
+    loginTab.classList.remove(
+        "active"
+    );
+
+
+    loginForm.hidden =
+        true;
+
+    signupForm.hidden =
+        false;
+
+
+    authTitle.textContent =
+        "Create your account";
+
+
+    authSubtitle.textContent =
+        "Set up your personal study space in seconds.";
+
+
+    setAuthMessage(
+        ""
+    );
+
+
+    setTimeout(
+        () => signupName.focus(),
+        80
+    );
+
+}
+
+
+/* =====================================================
+   AUTHENTICATION STORAGE
+   ===================================================== */
+
+function saveAuthentication(
+    token,
+    user
+) {
+
+    authToken =
+        token;
+
+
+    currentUser =
+        user;
+
+
+    localStorage.setItem(
+        AUTH_STORAGE.token,
+        token
+    );
+
+
+    localStorage.setItem(
+        AUTH_STORAGE.user,
+        JSON.stringify(user)
+    );
+
+
+    updateCurrentUserDisplay();
+
+}
+
+
+function clearAuthentication() {
+
+    authToken =
+        null;
+
+
+    currentUser =
+        null;
+
+
+    localStorage.removeItem(
+        AUTH_STORAGE.token
+    );
+
+
+    localStorage.removeItem(
+        AUTH_STORAGE.user
+    );
+
+
+    subjects = [];
+    tasks = [];
+    exams = [];
+    activity = [];
+
+
+    updateCurrentUserDisplay();
+
+}
+
+
+function updateCurrentUserDisplay() {
+
+    if (!currentUserName) {
+        return;
+    }
+
+
+    currentUserName.textContent =
+        currentUser
+            ? currentUser.name
+            : "";
+
+}
+
+
+/* =====================================================
+   LOGIN
+   ===================================================== */
+
+loginForm.addEventListener(
+    "submit",
+    async (event) => {
+
+        event.preventDefault();
+
+
+        const email =
+            loginEmail.value.trim();
+
+
+        const password =
+            loginPassword.value;
+
+
+        if (
+            !email ||
+            !password
+        ) {
+
+            return;
+
+        }
+
+
+        const buttonText =
+            loginSubmitButton.querySelector(
+                "span:first-child"
+            );
+
+
+        const originalText =
+            buttonText
+                ? buttonText.textContent
+                : "Login to Study Planner";
+
+
+        if (buttonText) {
+
+            buttonText.textContent =
+                "Signing in...";
+
+        }
+
+
+        loginSubmitButton.disabled =
+            true;
+
+
+        setAuthMessage(
+            "Checking your account..."
+        );
+
+
+        try {
+
+            const data =
+                await apiRequest(
+                    "/auth/login",
+                    {
+                        method: "POST",
+                        body:
+                            JSON.stringify({
+                                email,
+                                password
+                            })
+                    }
+                );
+
+
+            saveAuthentication(
+                data.token,
+                data.user
+            );
+
+
+            loginForm.reset();
+
+
+            setAuthMessage(
+                "Login successful.",
+                "success"
+            );
+
+
+            hideAuthScreen();
+
+
+            await loadData();
+
+
+        } catch (error) {
+
+            console.error(
+                "Login failed:",
+                error
+            );
+
+
+            setAuthMessage(
+                error.message ||
+                "Unable to login. Please try again.",
+                "error"
+            );
+
+        } finally {
+
+            loginSubmitButton.disabled =
+                false;
+
+
+            if (buttonText) {
+
+                buttonText.textContent =
+                    originalText;
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   SIGN UP
+   ===================================================== */
+
+signupForm.addEventListener(
+    "submit",
+    async (event) => {
+
+        event.preventDefault();
+
+
+        const name =
+            signupName.value.trim();
+
+
+        const email =
+            signupEmail.value.trim();
+
+
+        const password =
+            signupPassword.value;
+
+
+        const confirmPassword =
+            signupConfirmPassword.value;
+
+
+        if (
+            !name ||
+            !email ||
+            !password ||
+            !confirmPassword
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            password !==
+            confirmPassword
+        ) {
+
+            setAuthMessage(
+                "Passwords do not match.",
+                "error"
+            );
+
+
+            signupConfirmPassword.focus();
+
+            return;
+
+        }
+
+
+        if (
+            password.length < 6
+        ) {
+
+            setAuthMessage(
+                "Password must be at least 6 characters.",
+                "error"
+            );
+
+
+            signupPassword.focus();
+
+            return;
+
+        }
+
+
+        const buttonText =
+            signupSubmitButton.querySelector(
+                "span:first-child"
+            );
+
+
+        const originalText =
+            buttonText
+                ? buttonText.textContent
+                : "Create My Account";
+
+
+        if (buttonText) {
+
+            buttonText.textContent =
+                "Creating account...";
+
+        }
+
+
+        signupSubmitButton.disabled =
+            true;
+
+
+        setAuthMessage(
+            "Creating your account..."
+        );
+
+
+        try {
+
+            const data =
+                await apiRequest(
+                    "/auth/signup",
+                    {
+                        method: "POST",
+                        body:
+                            JSON.stringify({
+                                name,
+                                email,
+                                password
+                            })
+                    }
+                );
+
+
+            saveAuthentication(
+                data.token,
+                data.user
+            );
+
+
+            signupForm.reset();
+
+
+            setAuthMessage(
+                "Account created successfully.",
+                "success"
+            );
+
+
+            hideAuthScreen();
+
+
+            await loadData();
+
+
+        } catch (error) {
+
+            console.error(
+                "Signup failed:",
+                error
+            );
+
+
+            setAuthMessage(
+                error.message ||
+                "Unable to create your account.",
+                "error"
+            );
+
+        } finally {
+
+            signupSubmitButton.disabled =
+                false;
+
+
+            if (buttonText) {
+
+                buttonText.textContent =
+                    originalText;
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   AUTH TABS
+   ===================================================== */
+
+loginTab.addEventListener(
+    "click",
+    showLoginForm
+);
+
+
+signupTab.addEventListener(
+    "click",
+    showSignupForm
+);
+
+
+/* =====================================================
+   PASSWORD VISIBILITY
+   ===================================================== */
+
+document
+    .querySelectorAll(
+        ".password-toggle"
+    )
+    .forEach(
+        (button) => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const targetId =
+                        button.getAttribute(
+                            "data-password-target"
+                        );
+
+
+                    const input =
+                        document.getElementById(
+                            targetId
+                        );
+
+
+                    if (!input) {
+                        return;
+                    }
+
+
+                    const showing =
+                        input.type ===
+                        "text";
+
+
+                    input.type =
+                        showing
+                            ? "password"
+                            : "text";
+
+
+                    button.textContent =
+                        showing
+                            ? "Show"
+                            : "Hide";
+
+
+                    button.setAttribute(
+                        "aria-label",
+                        showing
+                            ? "Show password"
+                            : "Hide password"
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+/* =====================================================
+   LOGOUT
+   ===================================================== */
+
+logoutButton.addEventListener(
+    "click",
+    () => {
+
+        const shouldLogout =
+            confirm(
+                "Log out of Study Planner?"
+            );
+
+
+        if (!shouldLogout) {
+            return;
+        }
+
+
+        clearAuthentication();
+
+
+        closeAllModals();
+
+
+        navLinks.classList.remove(
+            "open"
+        );
+
+
+        loginForm.reset();
+
+        signupForm.reset();
+
+
+        showAuthScreen();
+
+        showLoginForm();
+
+
+        window.scrollTo(
+            0,
+            0
+        );
+
+    }
+);
 
 
 /* =====================================================
@@ -336,42 +1145,61 @@ function getTodayString() {
     const date =
         new Date();
 
+
     const year =
         date.getFullYear();
+
 
     const month =
         String(
             date.getMonth() + 1
-        ).padStart(2, "0");
+        ).padStart(
+            2,
+            "0"
+        );
+
 
     const day =
         String(
             date.getDate()
-        ).padStart(2, "0");
+        ).padStart(
+            2,
+            "0"
+        );
+
 
     return `${year}-${month}-${day}`;
 
 }
 
 
-function formatDate(dateString) {
+function formatDate(
+    dateString
+) {
 
     if (!dateString) {
+
         return "";
+
     }
+
 
     const date =
         new Date(
             `${dateString}T00:00:00`
         );
 
+
     if (
         Number.isNaN(
             date.getTime()
         )
     ) {
+
         return "";
+
     }
+
 
     return date.toLocaleDateString(
         "en-IN",
@@ -385,21 +1213,26 @@ function formatDate(dateString) {
 }
 
 
-function getDaysUntil(dateString) {
+function getDaysUntil(
+    dateString
+) {
 
     const today =
         new Date(
             `${getTodayString()}T00:00:00`
         );
 
+
     const target =
         new Date(
             `${dateString}T00:00:00`
         );
 
+
     const difference =
         target.getTime() -
         today.getTime();
+
 
     return Math.round(
         difference / 86400000
@@ -409,22 +1242,42 @@ function getDaysUntil(dateString) {
 
 
 /* =====================================================
-   ACTIVITY TRACKING
+   ACTIVITY
    ===================================================== */
 
-function addActivity() {
+async function addActivity() {
 
     const today =
         getTodayString();
 
-    if (!activity.includes(today)) {
 
-        activity.push(today);
+    if (
+        !activity.includes(today)
+    ) {
 
-        writeStorage(
-            STORAGE.activity,
-            activity
-        );
+        const savedActivity =
+            await apiRequest(
+                "/activity",
+                {
+                    method: "POST",
+                    body:
+                        JSON.stringify({
+                            date: today
+                        })
+                }
+            );
+
+
+        if (
+            savedActivity &&
+            savedActivity.date
+        ) {
+
+            activity.push(
+                savedActivity.date
+            );
+
+        }
 
     }
 
@@ -437,24 +1290,36 @@ function addActivity() {
 
 function calculateStreak() {
 
-    if (activity.length === 0) {
+    if (
+        activity.length === 0
+    ) {
+
         return 0;
+
     }
 
+
     const uniqueDates =
-        [...new Set(activity)]
+        [
+            ...new Set(
+                activity
+            )
+        ]
             .sort()
             .reverse();
+
 
     const today =
         new Date(
             `${getTodayString()}T00:00:00`
         );
 
+
     const latestDate =
         new Date(
             `${uniqueDates[0]}T00:00:00`
         );
+
 
     const daysFromToday =
         Math.round(
@@ -464,16 +1329,19 @@ function calculateStreak() {
             ) / 86400000
         );
 
-    /*
-       If the latest activity is more than
-       one day old, the current streak is zero.
-    */
 
-    if (daysFromToday > 1) {
+    if (
+        daysFromToday > 1
+    ) {
+
         return 0;
+
     }
 
-    let streak = 1;
+
+    let streak =
+        1;
+
 
     for (
         let i = 1;
@@ -486,10 +1354,12 @@ function calculateStreak() {
                 `${uniqueDates[i - 1]}T00:00:00`
             );
 
+
         const previous =
             new Date(
                 `${uniqueDates[i]}T00:00:00`
             );
+
 
         const difference =
             Math.round(
@@ -499,7 +1369,10 @@ function calculateStreak() {
                 ) / 86400000
             );
 
-        if (difference === 1) {
+
+        if (
+            difference === 1
+        ) {
 
             streak++;
 
@@ -511,6 +1384,7 @@ function calculateStreak() {
 
     }
 
+
     return streak;
 
 }
@@ -521,13 +1395,22 @@ function renderStreak() {
     const streak =
         calculateStreak();
 
+
     studyStreak.textContent =
-        `${streak} ${streak === 1 ? "day" : "days"}`;
+        `${streak} ${
+            streak === 1
+                ? "day"
+                : "days"
+        }`;
 
 
-    if (streak === 0) {
+    if (
+        streak === 0
+    ) {
 
-        if (activity.length === 0) {
+        if (
+            activity.length === 0
+        ) {
 
             streakMessage.textContent =
                 "Complete a task to start your streak.";
@@ -539,12 +1422,16 @@ function renderStreak() {
 
         }
 
-    } else if (streak === 1) {
+    } else if (
+        streak === 1
+    ) {
 
         streakMessage.textContent =
             "Great start! Keep it going tomorrow.";
 
-    } else if (streak < 7) {
+    } else if (
+        streak < 7
+    ) {
 
         streakMessage.textContent =
             "You're building a strong study habit.";
@@ -567,6 +1454,7 @@ function renderToday() {
 
     const date =
         new Date();
+
 
     todayDate.textContent =
         date.toLocaleDateString(
@@ -594,10 +1482,12 @@ mobileMenuButton.addEventListener(
                 "open"
             );
 
+
         mobileMenuButton.setAttribute(
             "aria-expanded",
             String(open)
         );
+
 
         mobileMenuButton.setAttribute(
             "aria-label",
@@ -625,10 +1515,12 @@ document
                         "open"
                     );
 
+
                     mobileMenuButton.setAttribute(
                         "aria-expanded",
                         "false"
                     );
+
 
                     mobileMenuButton.setAttribute(
                         "aria-label",
@@ -646,16 +1538,20 @@ document
    MODALS
    ===================================================== */
 
-function openModal(modal) {
+function openModal(
+    modal
+) {
 
     modal.classList.add(
         "show"
     );
 
+
     modal.setAttribute(
         "aria-hidden",
         "false"
     );
+
 
     document.body.style.overflow =
         "hidden";
@@ -663,21 +1559,26 @@ function openModal(modal) {
 }
 
 
-function closeModal(modal) {
+function closeModal(
+    modal
+) {
 
     modal.classList.remove(
         "show"
     );
+
 
     modal.setAttribute(
         "aria-hidden",
         "true"
     );
 
+
     const anyModalOpen =
         document.querySelector(
             ".modal.show"
         );
+
 
     if (!anyModalOpen) {
 
@@ -714,12 +1615,23 @@ addSubjectButton.addEventListener(
 
         subjectForm.reset();
 
+
+        if (subjectColor) {
+
+            subjectColor.value =
+                "blue";
+
+        }
+
+
         openModal(
             subjectModal
         );
 
+
         setTimeout(
-            () => subjectName.focus(),
+            () =>
+                subjectName.focus(),
             100
         );
 
@@ -731,26 +1643,34 @@ addTaskButton.addEventListener(
     "click",
     () => {
 
-        if (subjects.length === 0) {
+        if (
+            subjects.length === 0
+        ) {
 
             alert(
                 "Add a subject before creating a task."
             );
 
+
             return;
 
         }
 
+
         taskForm.reset();
 
+
         populateSubjectOptions();
+
 
         openModal(
             taskModal
         );
 
+
         setTimeout(
-            () => taskTitle.focus(),
+            () =>
+                taskTitle.focus(),
             100
         );
 
@@ -762,26 +1682,34 @@ addExamButton.addEventListener(
     "click",
     () => {
 
-        if (subjects.length === 0) {
+        if (
+            subjects.length === 0
+        ) {
 
             alert(
                 "Add a subject before creating an exam."
             );
 
+
             return;
 
         }
 
+
         examForm.reset();
 
+
         populateSubjectOptions();
+
 
         openModal(
             examModal
         );
 
+
         setTimeout(
-            () => examName.focus(),
+            () =>
+                examName.focus(),
             100
         );
 
@@ -805,10 +1733,12 @@ document
                             "data-close"
                         );
 
+
                     const modal =
                         document.getElementById(
                             modalId
                         );
+
 
                     if (modal) {
 
@@ -875,75 +1805,145 @@ document.addEventListener(
 
 subjectForm.addEventListener(
     "submit",
-    (event) => {
+    async (event) => {
 
         event.preventDefault();
+
 
         const name =
             subjectName.value.trim();
 
+
         const color =
             subjectColor.value;
 
+
         if (!name) {
+
             return;
+
         }
 
 
-        const duplicate =
-            subjects.some(
-                (subject) =>
-                    subject.name.toLowerCase() ===
-                    name.toLowerCase()
+        try {
+
+            await apiRequest(
+                "/subjects",
+                {
+                    method: "POST",
+                    body:
+                        JSON.stringify({
+                            name,
+                            color
+                        })
+                }
             );
 
 
-        if (duplicate) {
+            subjectForm.reset();
+
+
+            closeModal(
+                subjectModal
+            );
+
+
+            await loadData();
+
+        } catch (error) {
+
+            if (
+                error.status === 401
+            ) {
+
+                handleAuthenticationFailure();
+
+                return;
+
+            }
+
 
             alert(
-                "A subject with this name already exists."
+                error.message ||
+                "Failed to add subject."
             );
 
-            subjectName.focus();
-
-            return;
-
         }
-
-
-        subjects.push({
-
-            id: createId(),
-
-            name: name,
-
-            color: color
-
-        });
-
-
-        writeStorage(
-            STORAGE.subjects,
-            subjects
-        );
-
-
-        subjectForm.reset();
-
-        closeModal(
-            subjectModal
-        );
-
-        renderAll();
 
     }
 );
+
+
+function getSubjectClass(
+    color
+) {
+
+    const validColors = [
+        "blue",
+        "purple",
+        "green",
+        "orange",
+        "red"
+    ];
+
+
+    const value =
+        String(
+            color || ""
+        ).toLowerCase();
+
+
+    return validColors.includes(
+        value
+    )
+        ? `subject-${value}`
+        : "";
+
+}
+
+
+function getSubjectBorderColor(
+    color
+) {
+
+    const normalized =
+        String(
+            color || ""
+        ).toLowerCase();
+
+
+    const colors = {
+
+        blue:
+            "#60a5fa",
+
+        purple:
+            "#8b5cf6",
+
+        green:
+            "#34d399",
+
+        orange:
+            "#f59e0b",
+
+        red:
+            "#fb7185"
+
+    };
+
+
+    return colors[normalized] ||
+        color ||
+        "#8b5cf6";
+
+}
 
 
 function renderSubjects() {
 
     subjectGrid.innerHTML =
         "";
+
 
     subjectCount.textContent =
         subjects.length;
@@ -963,14 +1963,38 @@ function renderSubjects() {
                     "article"
                 );
 
+
             card.className =
-                `subject-card subject-${subject.color}`;
+                "subject-card";
+
+
+            const subjectClass =
+                getSubjectClass(
+                    subject.color
+                );
+
+
+            if (subjectClass) {
+
+                card.classList.add(
+                    subjectClass
+                );
+
+            } else {
+
+                card.style.borderTopColor =
+                    getSubjectBorderColor(
+                        subject.color
+                    );
+
+            }
 
 
             const top =
                 document.createElement(
                     "div"
                 );
+
 
             top.className =
                 "subject-top";
@@ -987,8 +2011,10 @@ function renderSubjects() {
                     "h3"
                 );
 
+
             name.className =
                 "subject-name";
+
 
             name.textContent =
                 subject.name;
@@ -1014,8 +2040,10 @@ function renderSubjects() {
                     "p"
                 );
 
+
             taskCount.className =
                 "subject-task-count";
+
 
             taskCount.textContent =
                 `${completed} of ${relatedTasks.length} tasks completed`;
@@ -1024,6 +2052,7 @@ function renderSubjects() {
             information.appendChild(
                 name
             );
+
 
             information.appendChild(
                 taskCount
@@ -1035,14 +2064,18 @@ function renderSubjects() {
                     "button"
                 );
 
+
             deleteButton.type =
                 "button";
+
 
             deleteButton.className =
                 "delete-button";
 
+
             deleteButton.textContent =
                 "×";
+
 
             deleteButton.setAttribute(
                 "aria-label",
@@ -1063,13 +2096,16 @@ function renderSubjects() {
                 information
             );
 
+
             top.appendChild(
                 deleteButton
             );
 
+
             card.appendChild(
                 top
             );
+
 
             subjectGrid.appendChild(
                 card
@@ -1081,7 +2117,9 @@ function renderSubjects() {
 }
 
 
-function deleteSubject(subjectId) {
+async function deleteSubject(
+    subjectId
+) {
 
     const subject =
         subjects.find(
@@ -1091,21 +2129,25 @@ function deleteSubject(subjectId) {
 
 
     if (!subject) {
+
         return;
+
     }
 
 
     const relatedTasks =
         tasks.some(
             (task) =>
-                task.subjectId === subjectId
+                task.subjectId ===
+                subjectId
         );
 
 
     const relatedExams =
         exams.some(
             (exam) =>
-                exam.subjectId === subjectId
+                exam.subjectId ===
+                subjectId
         );
 
 
@@ -1124,49 +2166,48 @@ function deleteSubject(subjectId) {
     }
 
 
-    if (!confirm(message)) {
+    if (
+        !confirm(message)
+    ) {
+
         return;
+
     }
 
 
-    subjects =
-        subjects.filter(
-            (item) =>
-                item.id !== subjectId
+    try {
+
+        await apiRequest(
+            `/subjects/${encodeURIComponent(
+                subjectId
+            )}`,
+            {
+                method: "DELETE"
+            }
         );
 
 
-    tasks =
-        tasks.filter(
-            (task) =>
-                task.subjectId !== subjectId
+        await loadData();
+
+    } catch (error) {
+
+        if (
+            error.status === 401
+        ) {
+
+            handleAuthenticationFailure();
+
+            return;
+
+        }
+
+
+        alert(
+            error.message ||
+            "Failed to delete subject."
         );
 
-
-    exams =
-        exams.filter(
-            (exam) =>
-                exam.subjectId !== subjectId
-        );
-
-
-    writeStorage(
-        STORAGE.subjects,
-        subjects
-    );
-
-    writeStorage(
-        STORAGE.tasks,
-        tasks
-    );
-
-    writeStorage(
-        STORAGE.exams,
-        exams
-    );
-
-
-    renderAll();
+    }
 
 }
 
@@ -1180,6 +2221,7 @@ function populateSubjectOptions() {
     taskSubject.innerHTML =
         "";
 
+
     examSubject.innerHTML =
         "";
 
@@ -1189,17 +2231,22 @@ function populateSubjectOptions() {
             "option"
         );
 
+
     taskDefault.value =
         "";
+
 
     taskDefault.textContent =
         "Select a subject";
 
+
     taskDefault.disabled =
         true;
 
+
     taskDefault.selected =
         true;
+
 
     taskSubject.appendChild(
         taskDefault
@@ -1211,17 +2258,22 @@ function populateSubjectOptions() {
             "option"
         );
 
+
     examDefault.value =
         "";
+
 
     examDefault.textContent =
         "Select a subject";
 
+
     examDefault.disabled =
         true;
 
+
     examDefault.selected =
         true;
+
 
     examSubject.appendChild(
         examDefault
@@ -1236,8 +2288,10 @@ function populateSubjectOptions() {
                     "option"
                 );
 
+
             taskOption.value =
                 subject.id;
+
 
             taskOption.textContent =
                 subject.name;
@@ -1248,8 +2302,10 @@ function populateSubjectOptions() {
                     "option"
                 );
 
+
             examOption.value =
                 subject.id;
+
 
             examOption.textContent =
                 subject.name;
@@ -1258,6 +2314,7 @@ function populateSubjectOptions() {
             taskSubject.appendChild(
                 taskOption
             );
+
 
             examSubject.appendChild(
                 examOption
@@ -1275,15 +2332,18 @@ function populateSubjectOptions() {
 
 taskForm.addEventListener(
     "submit",
-    (event) => {
+    async (event) => {
 
         event.preventDefault();
+
 
         const title =
             taskTitle.value.trim();
 
+
         const subjectId =
             taskSubject.value;
+
 
         const dueDate =
             taskDueDate.value;
@@ -1300,37 +2360,52 @@ taskForm.addEventListener(
         }
 
 
-        tasks.push({
+        try {
 
-            id: createId(),
-
-            title: title,
-
-            subjectId: subjectId,
-
-            dueDate: dueDate,
-
-            completed: false,
-
-            createdAt:
-                new Date().toISOString()
-
-        });
-
-
-        writeStorage(
-            STORAGE.tasks,
-            tasks
-        );
+            await apiRequest(
+                "/tasks",
+                {
+                    method: "POST",
+                    body:
+                        JSON.stringify({
+                            title,
+                            subject:
+                                subjectId,
+                            dueDate
+                        })
+                }
+            );
 
 
-        taskForm.reset();
+            taskForm.reset();
 
-        closeModal(
-            taskModal
-        );
 
-        renderAll();
+            closeModal(
+                taskModal
+            );
+
+
+            await loadData();
+
+        } catch (error) {
+
+            if (
+                error.status === 401
+            ) {
+
+                handleAuthenticationFailure();
+
+                return;
+
+            }
+
+
+            alert(
+                error.message ||
+                "Failed to add task."
+            );
+
+        }
 
     }
 );
@@ -1396,11 +2471,14 @@ function renderTasks() {
                     "article"
                 );
 
+
             item.className =
                 "task-item";
 
 
-            if (task.completed) {
+            if (
+                task.completed
+            ) {
 
                 item.classList.add(
                     "completed"
@@ -1414,18 +2492,23 @@ function renderTasks() {
                     "button"
                 );
 
+
             check.type =
                 "button";
+
 
             check.className =
                 "task-check";
 
 
-            if (task.completed) {
+            if (
+                task.completed
+            ) {
 
                 check.classList.add(
                     "completed"
                 );
+
 
                 check.textContent =
                     "✓";
@@ -1455,6 +2538,7 @@ function renderTasks() {
                     "div"
                 );
 
+
             details.className =
                 "task-details";
 
@@ -1464,8 +2548,10 @@ function renderTasks() {
                     "h3"
                 );
 
+
             title.className =
                 "task-title";
+
 
             title.textContent =
                 task.title;
@@ -1475,6 +2561,7 @@ function renderTasks() {
                 document.createElement(
                     "div"
                 );
+
 
             meta.className =
                 "task-meta";
@@ -1493,8 +2580,10 @@ function renderTasks() {
                     "span"
                 );
 
+
             subjectText.className =
                 "task-subject";
+
 
             subjectText.textContent =
                 subject
@@ -1507,8 +2596,10 @@ function renderTasks() {
                     "span"
                 );
 
+
             dateText.className =
                 "task-date";
+
 
             dateText.textContent =
                 formatDate(
@@ -1534,6 +2625,7 @@ function renderTasks() {
                 subjectText
             );
 
+
             meta.appendChild(
                 dateText
             );
@@ -1542,6 +2634,7 @@ function renderTasks() {
             details.appendChild(
                 title
             );
+
 
             details.appendChild(
                 meta
@@ -1553,14 +2646,18 @@ function renderTasks() {
                     "button"
                 );
 
+
             deleteButton.type =
                 "button";
+
 
             deleteButton.className =
                 "delete-button task-delete";
 
+
             deleteButton.textContent =
                 "×";
+
 
             deleteButton.setAttribute(
                 "aria-label",
@@ -1581,13 +2678,16 @@ function renderTasks() {
                 check
             );
 
+
             item.appendChild(
                 details
             );
 
+
             item.appendChild(
                 deleteButton
             );
+
 
             taskList.appendChild(
                 item
@@ -1603,7 +2703,9 @@ function renderTasks() {
    TOGGLE TASK
    ===================================================== */
 
-function toggleTask(taskId) {
+async function toggleTask(
+    taskId
+) {
 
     const task =
         tasks.find(
@@ -1613,40 +2715,80 @@ function toggleTask(taskId) {
 
 
     if (!task) {
+
         return;
+
     }
 
 
-    const wasCompleted =
-        task.completed;
-
-
-    task.completed =
+    const newCompletedState =
         !task.completed;
 
 
-    /*
-       Completing a task counts as
-       study activity for the current day.
-    */
+    try {
 
-    if (
-        !wasCompleted &&
-        task.completed
-    ) {
+        await apiRequest(
+            `/tasks/${encodeURIComponent(
+                taskId
+            )}`,
+            {
+                method: "PUT",
+                body:
+                    JSON.stringify({
+                        completed:
+                            newCompletedState
+                    })
+            }
+        );
 
-        addActivity();
+
+        if (
+            !task.completed &&
+            newCompletedState
+        ) {
+
+            try {
+
+                await addActivity();
+
+            } catch (activityError) {
+
+                console.error(
+                    "Activity save failed:",
+                    activityError
+                );
+
+
+                alert(
+                    "The task was completed, but today's study activity could not be saved."
+                );
+
+            }
+
+        }
+
+
+        await loadData();
+
+    } catch (error) {
+
+        if (
+            error.status === 401
+        ) {
+
+            handleAuthenticationFailure();
+
+            return;
+
+        }
+
+
+        alert(
+            error.message ||
+            "Failed to update task."
+        );
 
     }
-
-
-    writeStorage(
-        STORAGE.tasks,
-        tasks
-    );
-
-
-    renderAll();
 
 }
 
@@ -1655,7 +2797,9 @@ function toggleTask(taskId) {
    DELETE TASK
    ===================================================== */
 
-function deleteTask(taskId) {
+async function deleteTask(
+    taskId
+) {
 
     if (
         !confirm(
@@ -1668,20 +2812,39 @@ function deleteTask(taskId) {
     }
 
 
-    tasks =
-        tasks.filter(
-            (task) =>
-                task.id !== taskId
+    try {
+
+        await apiRequest(
+            `/tasks/${encodeURIComponent(
+                taskId
+            )}`,
+            {
+                method: "DELETE"
+            }
         );
 
 
-    writeStorage(
-        STORAGE.tasks,
-        tasks
-    );
+        await loadData();
+
+    } catch (error) {
+
+        if (
+            error.status === 401
+        ) {
+
+            handleAuthenticationFailure();
+
+            return;
+
+        }
 
 
-    renderAll();
+        alert(
+            error.message ||
+            "Failed to delete task."
+        );
+
+    }
 
 }
 
@@ -1740,7 +2903,7 @@ document
 
 examForm.addEventListener(
     "submit",
-    (event) => {
+    async (event) => {
 
         event.preventDefault();
 
@@ -1748,8 +2911,10 @@ examForm.addEventListener(
         const name =
             examName.value.trim();
 
+
         const subjectId =
             examSubject.value;
+
 
         const date =
             examDate.value;
@@ -1766,32 +2931,52 @@ examForm.addEventListener(
         }
 
 
-        exams.push({
+        try {
 
-            id: createId(),
-
-            name: name,
-
-            subjectId: subjectId,
-
-            date: date
-
-        });
-
-
-        writeStorage(
-            STORAGE.exams,
-            exams
-        );
+            await apiRequest(
+                "/exams",
+                {
+                    method: "POST",
+                    body:
+                        JSON.stringify({
+                            name,
+                            subject:
+                                subjectId,
+                            date
+                        })
+                }
+            );
 
 
-        examForm.reset();
+            examForm.reset();
 
-        closeModal(
-            examModal
-        );
 
-        renderAll();
+            closeModal(
+                examModal
+            );
+
+
+            await loadData();
+
+        } catch (error) {
+
+            if (
+                error.status === 401
+            ) {
+
+                handleAuthenticationFailure();
+
+                return;
+
+            }
+
+
+            alert(
+                error.message ||
+                "Failed to add exam."
+            );
+
+        }
 
     }
 );
@@ -1832,6 +3017,7 @@ function renderExams() {
                     "article"
                 );
 
+
             card.className =
                 "exam-card";
 
@@ -1840,6 +3026,7 @@ function renderExams() {
                 document.createElement(
                     "div"
                 );
+
 
             dateBox.className =
                 "exam-date-box";
@@ -1850,8 +3037,10 @@ function renderExams() {
                     "span"
                 );
 
+
             day.className =
                 "exam-day";
+
 
             day.textContent =
                 date.getDate();
@@ -1862,8 +3051,10 @@ function renderExams() {
                     "span"
                 );
 
+
             month.className =
                 "exam-month";
+
 
             month.textContent =
                 date.toLocaleDateString(
@@ -1878,6 +3069,7 @@ function renderExams() {
                 day
             );
 
+
             dateBox.appendChild(
                 month
             );
@@ -1888,6 +3080,7 @@ function renderExams() {
                     "div"
                 );
 
+
             details.className =
                 "exam-details";
 
@@ -1897,11 +3090,14 @@ function renderExams() {
                     "h3"
                 );
 
+
             name.className =
                 "exam-name";
 
+
             name.textContent =
-                exam.name;
+                exam.name ||
+                "Unnamed exam";
 
 
             const subject =
@@ -1917,8 +3113,10 @@ function renderExams() {
                     "p"
                 );
 
+
             subjectText.className =
                 "exam-subject";
+
 
             subjectText.textContent =
                 subject
@@ -1930,6 +3128,7 @@ function renderExams() {
                 name
             );
 
+
             details.appendChild(
                 subjectText
             );
@@ -1939,6 +3138,7 @@ function renderExams() {
                 document.createElement(
                     "span"
                 );
+
 
             countdown.className =
                 "exam-countdown";
@@ -1950,17 +3150,23 @@ function renderExams() {
                 );
 
 
-            if (days < 0) {
+            if (
+                days < 0
+            ) {
 
                 countdown.textContent =
                     "Passed";
 
-            } else if (days === 0) {
+            } else if (
+                days === 0
+            ) {
 
                 countdown.textContent =
                     "Today";
 
-            } else if (days === 1) {
+            } else if (
+                days === 1
+            ) {
 
                 countdown.textContent =
                     "Tomorrow";
@@ -1978,14 +3184,18 @@ function renderExams() {
                     "button"
                 );
 
+
             deleteButton.type =
                 "button";
+
 
             deleteButton.className =
                 "delete-button";
 
+
             deleteButton.textContent =
                 "×";
+
 
             deleteButton.setAttribute(
                 "aria-label",
@@ -2006,17 +3216,21 @@ function renderExams() {
                 dateBox
             );
 
+
             card.appendChild(
                 details
             );
+
 
             card.appendChild(
                 countdown
             );
 
+
             card.appendChild(
                 deleteButton
             );
+
 
             examList.appendChild(
                 card
@@ -2032,7 +3246,9 @@ function renderExams() {
    DELETE EXAM
    ===================================================== */
 
-function deleteExam(examId) {
+async function deleteExam(
+    examId
+) {
 
     if (
         !confirm(
@@ -2045,20 +3261,39 @@ function deleteExam(examId) {
     }
 
 
-    exams =
-        exams.filter(
-            (exam) =>
-                exam.id !== examId
+    try {
+
+        await apiRequest(
+            `/exams/${encodeURIComponent(
+                examId
+            )}`,
+            {
+                method: "DELETE"
+            }
         );
 
 
-    writeStorage(
-        STORAGE.exams,
-        exams
-    );
+        await loadData();
+
+    } catch (error) {
+
+        if (
+            error.status === 401
+        ) {
+
+            handleAuthenticationFailure();
+
+            return;
+
+        }
 
 
-    renderAll();
+        alert(
+            error.message ||
+            "Failed to delete exam."
+        );
+
+    }
 
 }
 
@@ -2072,6 +3307,7 @@ function renderCompletionRate() {
     const total =
         tasks.length;
 
+
     const completed =
         tasks.filter(
             (task) =>
@@ -2079,10 +3315,13 @@ function renderCompletionRate() {
         ).length;
 
 
-    let rate = 0;
+    let rate =
+        0;
 
 
-    if (total > 0) {
+    if (
+        total > 0
+    ) {
 
         rate =
             Math.round(
@@ -2097,6 +3336,7 @@ function renderCompletionRate() {
 
     completionRate.textContent =
         `${rate}%`;
+
 
     totalTaskCount.textContent =
         total;
@@ -2133,8 +3373,10 @@ function renderNextExam() {
         nextExamDays.textContent =
             "—";
 
+
         nextExamName.textContent =
             "No upcoming exam";
+
 
         return;
 
@@ -2144,18 +3386,23 @@ function renderNextExam() {
     const next =
         upcomingExams[0];
 
+
     const days =
         getDaysUntil(
             next.date
         );
 
 
-    if (days === 0) {
+    if (
+        days === 0
+    ) {
 
         nextExamDays.textContent =
             "Today";
 
-    } else if (days === 1) {
+    } else if (
+        days === 1
+    ) {
 
         nextExamDays.textContent =
             "Tomorrow";
@@ -2169,7 +3416,8 @@ function renderNextExam() {
 
 
     nextExamName.textContent =
-        next.name;
+        next.name ||
+        "Unnamed exam";
 
 }
 
@@ -2183,13 +3431,10 @@ function getStartOfWeek() {
     const today =
         new Date();
 
+
     const day =
         today.getDay();
 
-    /*
-       Convert Sunday = 0 into
-       Monday-based week.
-    */
 
     const difference =
         day === 0
@@ -2198,7 +3443,10 @@ function getStartOfWeek() {
 
 
     const monday =
-        new Date(today);
+        new Date(
+            today
+        );
+
 
     monday.setHours(
         0,
@@ -2207,32 +3455,14 @@ function getStartOfWeek() {
         0
     );
 
+
     monday.setDate(
         today.getDate() +
         difference
     );
 
+
     return monday;
-
-}
-
-
-function getDateStringFromDate(date) {
-
-    const year =
-        date.getFullYear();
-
-    const month =
-        String(
-            date.getMonth() + 1
-        ).padStart(2, "0");
-
-    const day =
-        String(
-            date.getDate()
-        ).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
 
 }
 
@@ -2241,6 +3471,7 @@ function renderWeeklyOverview() {
 
     const monday =
         getStartOfWeek();
+
 
     const counts = {
 
@@ -2262,6 +3493,7 @@ function renderWeeklyOverview() {
                 new Date(
                     `${dateString}T00:00:00`
                 );
+
 
             const difference =
                 Math.round(
@@ -2288,7 +3520,10 @@ function renderWeeklyOverview() {
 
 
     const values =
-        Object.values(counts);
+        Object.values(
+            counts
+        );
+
 
     const maximum =
         Math.max(
@@ -2305,8 +3540,11 @@ function renderWeeklyOverview() {
             const bar =
                 weeklyBars[day];
 
+
             if (!bar) {
+
                 return;
+
             }
 
 
@@ -2318,7 +3556,9 @@ function renderWeeklyOverview() {
                 10;
 
 
-            if (count > 0) {
+            if (
+                count > 0
+            ) {
 
                 height =
                     Math.max(
@@ -2411,14 +3651,17 @@ function renderDashboard() {
     completedTaskCount.textContent =
         completed;
 
+
     pendingTaskCount.textContent =
         pending;
+
 
     examCount.textContent =
         upcoming;
 
 
-    let percentage = 0;
+    let percentage =
+        0;
 
 
     if (
@@ -2486,8 +3729,10 @@ function setDateRestrictions() {
     const today =
         getTodayString();
 
+
     taskDueDate.min =
         today;
+
 
     examDate.min =
         today;
@@ -2496,7 +3741,7 @@ function setDateRestrictions() {
 
 
 /* =====================================================
-   REFRESH APPLICATION
+   RENDER EVERYTHING
    ===================================================== */
 
 function renderAll() {
@@ -2517,9 +3762,250 @@ function renderAll() {
 
 
 /* =====================================================
+   LOAD DATA FROM BACKEND
+   ===================================================== */
+
+async function loadData() {
+
+    if (!authToken) {
+
+        return;
+
+    }
+
+
+    const [
+        subjectData,
+        taskData,
+        examData,
+        activityData
+    ] =
+        await Promise.all([
+
+            apiRequest(
+                "/subjects"
+            ),
+
+            apiRequest(
+                "/tasks"
+            ),
+
+            apiRequest(
+                "/exams"
+            ),
+
+            apiRequest(
+                "/activity"
+            )
+
+        ]);
+
+
+    subjects =
+        Array.isArray(
+            subjectData
+        )
+            ? subjectData.map(
+                (subject) => ({
+
+                    id:
+                        subject._id,
+
+                    name:
+                        subject.name,
+
+                    color:
+                        subject.color
+
+                })
+            )
+            : [];
+
+
+    tasks =
+        Array.isArray(
+            taskData
+        )
+            ? taskData.map(
+                (task) => ({
+
+                    id:
+                        task._id,
+
+                    title:
+                        task.title,
+
+                    subjectId:
+                        task.subject &&
+                        typeof task.subject ===
+                            "object"
+                            ? task.subject._id
+                            : task.subject,
+
+                    dueDate:
+                        task.dueDate,
+
+                    completed:
+                        Boolean(
+                            task.completed
+                        ),
+
+                    createdAt:
+                        task.createdAt
+
+                })
+            )
+            : [];
+
+
+    exams =
+        Array.isArray(
+            examData
+        )
+            ? examData.map(
+                (exam) => ({
+
+                    id:
+                        exam._id,
+
+                    name:
+                        exam.name,
+
+                    subjectId:
+                        exam.subject &&
+                        typeof exam.subject ===
+                            "object"
+                            ? exam.subject._id
+                            : exam.subject,
+
+                    date:
+                        exam.date
+
+                })
+            )
+            : [];
+
+
+    activity =
+        Array.isArray(
+            activityData
+        )
+            ? activityData.map(
+                (item) =>
+                    item.date
+                )
+            : [];
+
+
+    renderAll();
+
+}
+
+
+/* =====================================================
+   AUTHENTICATION FAILURE
+   ===================================================== */
+
+function handleAuthenticationFailure() {
+
+    clearAuthentication();
+
+
+    closeAllModals();
+
+
+    showAuthScreen();
+
+
+    showLoginForm();
+
+
+    setAuthMessage(
+        "Your session has expired. Please log in again.",
+        "error"
+    );
+
+}
+
+
+/* =====================================================
+   CHECK EXISTING LOGIN
+   ===================================================== */
+
+async function initializeAuthentication() {
+
+    setDateRestrictions();
+
+    updateCurrentUserDisplay();
+
+
+    if (!authToken) {
+
+        showAuthScreen();
+
+        showLoginForm();
+
+        renderAll();
+
+        return;
+
+    }
+
+
+    try {
+
+        const data =
+            await apiRequest(
+                "/auth/me"
+            );
+
+
+        currentUser =
+            data.user;
+
+
+        localStorage.setItem(
+            AUTH_STORAGE.user,
+            JSON.stringify(
+                currentUser
+            )
+        );
+
+
+        updateCurrentUserDisplay();
+
+
+        hideAuthScreen();
+
+
+        await loadData();
+
+    } catch (error) {
+
+        console.error(
+            "Authentication check failed:",
+            error
+        );
+
+
+        clearAuthentication();
+
+
+        showAuthScreen();
+
+
+        showLoginForm();
+
+
+        renderAll();
+
+    }
+
+}
+
+
+/* =====================================================
    START APPLICATION
    ===================================================== */
 
-setDateRestrictions();
-
-renderAll();
+initializeAuthentication();
